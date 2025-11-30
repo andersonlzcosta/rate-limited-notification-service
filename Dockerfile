@@ -17,9 +17,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app/ ./app/
 COPY tests/ ./tests/
 
-# Expose port
-EXPOSE 8000
+# Set default port (can be overridden by environment variable from docker-compose.yml)
+ENV NOTIFICATION_SERVICE_PORT=7000
 
-# Run the application
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run the application (using shell form to expand environment variable at runtime)
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${NOTIFICATION_SERVICE_PORT:-7000}"]
 

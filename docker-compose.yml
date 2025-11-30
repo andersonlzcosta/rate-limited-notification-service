@@ -5,7 +5,7 @@ services:
     image: redis:7-alpine
     container_name: notification-redis
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:${REDIS_PORT:-6379}"
     volumes:
       - redis-data:/data
       - ./redis.conf:/usr/local/etc/redis/redis.conf
@@ -22,11 +22,11 @@ services:
     image: rabbitmq:3-management-alpine
     container_name: notification-rabbitmq
     ports:
-      - "5672:5672"    # AMQP port
-      - "15672:15672"  # Management UI
+      - "${RABBITMQ_PORT:-5672}:${RABBITMQ_PORT:-5672}"    # AMQP port
+      - "${RABBITMQ_MANAGEMENT_PORT:-15672}:${RABBITMQ_MANAGEMENT_PORT:-15672}"  # Management UI
     environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: admin
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-admin}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-admin}
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
     networks:
@@ -43,14 +43,14 @@ services:
       dockerfile: Dockerfile
     container_name: notification-service
     ports:
-      - "8000:8000"
+      - "${NOTIFICATION_SERVICE_PORT:-7000}:${NOTIFICATION_SERVICE_PORT:-7000}"
     environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - RABBITMQ_HOST=rabbitmq
-      - RABBITMQ_PORT=5672
-      - RABBITMQ_USER=admin
-      - RABBITMQ_PASS=admin
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - RABBITMQ_HOST=${RABBITMQ_HOST:-rabbitmq}
+      - RABBITMQ_PORT=${RABBITMQ_PORT:-5672}
+      - RABBITMQ_USER=${RABBITMQ_USER:-${RABBITMQ_DEFAULT_USER:-admin}}
+      - RABBITMQ_PASS=${RABBITMQ_PASS:-${RABBITMQ_DEFAULT_PASS:-admin}}
     depends_on:
       redis:
         condition: service_healthy
@@ -61,7 +61,7 @@ services:
     volumes:
       - ./app:/app/app
       - ./tests:/app/tests
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn app.main:app --host ${NOTIFICATION_SERVICE_HOST:-0.0.0.0} --port ${NOTIFICATION_SERVICE_PORT:-7000} --reload
 
 volumes:
   redis-data:
@@ -70,4 +70,3 @@ volumes:
 networks:
   notification-network:
     driver: bridge
-

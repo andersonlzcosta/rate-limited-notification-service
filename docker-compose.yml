@@ -49,8 +49,8 @@ services:
       - REDIS_PORT=${REDIS_PORT:-6379}
       - RABBITMQ_HOST=${RABBITMQ_HOST:-rabbitmq}
       - RABBITMQ_PORT=${RABBITMQ_PORT:-5672}
-      - RABBITMQ_USER=${RABBITMQ_USER:-${RABBITMQ_DEFAULT_USER:-admin}}
-      - RABBITMQ_PASS=${RABBITMQ_PASS:-${RABBITMQ_DEFAULT_PASS:-admin}}
+      - RABBITMQ_USER=${RABBITMQ_USER:-admin}
+      - RABBITMQ_PASS=${RABBITMQ_PASS:-admin}
     depends_on:
       redis:
         condition: service_healthy

@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     RABBITMQ_USER: str = "admin"
     RABBITMQ_PASS: str = "admin"
     
-    class Config:
+    class ConfigDict:
         env_file = ".env"
         case_sensitive = True
 
